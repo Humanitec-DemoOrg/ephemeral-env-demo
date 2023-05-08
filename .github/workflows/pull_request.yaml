@@ -1,7 +1,7 @@
 name: Pull Request
 
 env:
-  APP_NAME: demo-app
+  APP_NAME: automated-app
 
 on:
   push:
@@ -23,4 +23,4 @@ jobs:
           mv score-humanitec /usr/local/bin
 
       - name: Run Score
-        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app APP_NAME --env development -f money-api/score.yaml --overrides moneyapi.overrides.score.yaml
+        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app APP_NAME --env development
