@@ -1,0 +1,28 @@
+name: Pull Request
+
+env:
+  APP_NAME: demo-app
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install score-humanitec
+        if: steps.changes.outputs.scorefiles == 'true'
+        run: |
+          wget https://github.com/score-spec/score-humanitec/releases/download/0.3.0/score-humanitec_0.3.0_linux_amd64.tar.gz
+          tar -xvf score-humanitec_0.3.0_linux_amd64.tar.gz
+          chmod +x score-humanitec
+          mv score-humanitec /usr/local/bin
+
+      - name: Run Score
+        if: steps.changes.outputs.scorefiles == 'true'
+        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app APP_NAME --env development -f money-api/score.yaml --overrides moneyapi.overrides.score.yaml
