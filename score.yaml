@@ -15,7 +15,7 @@ containers:
   frontend:
     image: registry.humanitec.io/public/sample-score-app:latest
     variables:
-      MESSAGE: "Hello world!"
+      MESSAGE: "This is a test message"
       PORT: "3000"
       DB_DATABASE: ${resources.db.name}
       DB_USER: ${resources.db.username}
