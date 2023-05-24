@@ -57,7 +57,7 @@ jobs:
               -H "Content-Type: application/json" \
               -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
               https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/pr-${{ github.event.number }} \
-              | jq -r ".last_deploy.status)
+              | jq -r ".last_deploy.status")
             
             INPROGRESS="in progress"
 
