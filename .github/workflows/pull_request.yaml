@@ -13,11 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Comment PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          message: "## Deploying PR-${{ github.event.number }} to Humanitec :rocket:"
-
       - name: Create Humanitec App
         run: |
             # Get deployment ID of the main development environment
