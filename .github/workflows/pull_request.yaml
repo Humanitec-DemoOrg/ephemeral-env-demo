@@ -51,9 +51,7 @@ jobs:
 
           echo "<details><summary>Score Output</summary>" >> pr_message.txt
           echo "" >> pr_message.txt
-          echo "```" >> pr_message.txt
           cat score_output.json >> pr_message.txt
-          echo "```" >> pr_message.txt
           echo "" >> pr_message.txt
           echo "</details>" >> pr_message.txt
 
