@@ -1,8 +1,9 @@
 name: Pull Request
 
 on:
-  branch:
-    - main
+  push:
+    branches: [ "main" ]
+    
 
 permissions:
   contents: read

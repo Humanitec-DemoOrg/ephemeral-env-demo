@@ -1,8 +1,5 @@
 name: Pull Request
 
-env:
-  FROM_DEPLOY_ID: 175d44f7bc1d82a0
-
 on:
   pull_request:
     types: [opened, reopened, synchronize]
@@ -18,13 +15,21 @@ jobs:
 
       - name: Create Humanitec App
         run: |
+            # Get deployment ID of the main development environment
+            curl \
+            -H "Content-Type: application/json" \
+            -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
+            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/development \
+            | jq -r ".last_deploy.id" > deploy_id.txt
+
+            # Create a new environment for the PR
             curl -X POST \
             -H "Content-Type: application/json" \
             -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
             https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs \
             --data-binary @- << EOF
             {
-              "from_deploy_id": "$FROM_DEPLOY_ID",
+              "from_deploy_id": "$(cat deploy_id.txt)",
               "id": "pr-${{ github.event.number }}",
               "name": "PR-${{ github.event.number }}",
               "type": "development"
