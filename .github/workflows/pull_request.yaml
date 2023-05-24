@@ -46,6 +46,7 @@ jobs:
         run: |
           ENV_URL=$(jq ".metadata.url" score_output.json)
           echo "Deployment Complete for PR-${{ github.event.number }}! :tada: [View in Humanitec]($ENV_URL)" >> pr_message.txt
+          cat pr_message.txt
 
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
