@@ -50,7 +50,7 @@ jobs:
           echo "## Deployment Complete for PR-${{ github.event.number }}! :tada:" >> pr_message.txt
           echo "" >> pr_message.txt
           
-          echo "## [View in Humanitec ![Humanitec](https://assets.website-files.com/64462c9aa967776f20e53b43/64512f438f3c547f2cc63d7f_Favicon%2032x32.svg | width=32)]($ENV_URL)" >> pr_message.txt
+          echo "## [View in Humanitec ![Humanitec](https://assets.website-files.com/64462c9aa967776f20e53b43/64512f438f3c547f2cc63d7f_Favicon%2032x32.svg)]($ENV_URL)" >> pr_message.txt
           echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
 
           echo "<details><summary>Score Output</summary>" >> pr_message.txt
