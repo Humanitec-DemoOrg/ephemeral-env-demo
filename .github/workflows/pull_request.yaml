@@ -44,8 +44,17 @@ jobs:
 
       - name: Build Comment Message
         run: |
-          ENV_URL=$(jq ".metadata.url" score_output.json)
+          ENV_URL=$(jq -r ".metadata.url" score_output.json)
+          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
           echo "Deployment Complete for PR-${{ github.event.number }}! :tada: [View in Humanitec]($ENV_URL)" >> pr_message.txt
+          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
+
+          echo "<details><summary>Score Output</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          cat score_output.json >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
+
           cat pr_message.txt
 
       - name: Comment PR
