@@ -37,4 +37,14 @@ jobs:
           mv score-humanitec /usr/local/bin
 
       - name: Run Score
-        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env pr-${{ github.event.number }}
+        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env pr-${{ github.event.number }} | tee score_output.json
+
+      - name: Build Comment Message
+        run: |
+          ENV_URL=$(jq ".metadata.url" score_output.json)
+          echo "Deployment Complete for PR-${{ github.event.number }}! :tada: [View in Humanitec](ENV_URL)" >> pr_message.txt
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: pr_message.txt
