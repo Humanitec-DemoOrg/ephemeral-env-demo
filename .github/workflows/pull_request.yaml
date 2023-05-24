@@ -60,11 +60,8 @@ jobs:
 
           echo "" >> pr_message.txt
           echo "### Domains:" >> pr_message.txt
-          echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
           echo "$DOMAINS" >> pr_message.txt
-          echo "" >> pr_message.txt
-          echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
 
           echo "<details><summary>Score Output</summary>" >> pr_message.txt
