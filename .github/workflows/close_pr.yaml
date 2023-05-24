@@ -1,8 +1,5 @@
 name: Pull Request
 
-env:
-  APP_NAME: automated-app
-
 on:
   pull_request:
     types: [closed]
@@ -18,4 +15,4 @@ jobs:
             curl -X DELETE \
             -H "Content-Type: application/json" \
             -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
-            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/$APP_NAME/envs/pr-${{ github.event.number }}
+            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/pr-${{ github.event.number }}
