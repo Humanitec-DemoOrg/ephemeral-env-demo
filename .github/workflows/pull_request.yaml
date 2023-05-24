@@ -2,18 +2,29 @@ name: Pull Request
 
 env:
   APP_NAME: automated-app
+  FROM_DEPLOY_ID: 175d44f7bc1d82a0
 
 on:
-  push:
-    branches: [ "main" ]
-  # pull_request:
-  #   types: [opened, reopened]
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Create Humanitec App
+        run: |
+            curl -X POST -H "Content-Type: application/json" https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/$APP_NAME/envs \
+            --data-binary @- << EOF
+            {
+              "from_deploy_id": "$FROM_DEPLOY_ID",
+              "id": "pr-${{ github.event.number }}",
+              "name": "PR-${{ github.event.number }}",
+              "type": "development"
+            }
+            EOF
 
       - name: Install score-humanitec
         run: |
@@ -23,4 +34,4 @@ jobs:
           mv score-humanitec /usr/local/bin
 
       - name: Run Score
-        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env development
+        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env pr-${{ github.event.number }}
