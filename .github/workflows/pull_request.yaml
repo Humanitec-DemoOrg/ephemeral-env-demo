@@ -8,6 +8,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,4 +40,44 @@ jobs:
           mv score-humanitec /usr/local/bin
 
       - name: Run Score
-        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env pr-${{ github.event.number }}
+        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app $APP_NAME --env pr-${{ github.event.number }} | tee score_output.json
+
+      - name: Wait for deployment
+        run: |
+          sleep 1
+
+      - name: Build Comment Message
+        run: |
+          ENV_URL=$(jq -r ".metadata.url" score_output.json)
+          DEPLOYMENT_ID=$(jq -r ".id" score_output.json)
+          DOMAINS=$(curl -H "Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}" https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/$APP_NAME/envs/pr-${{ github.event.number }}/resources | jq -r '. | map(. | select(.type == "dns")) | map((.res_id | split(".") | .[1]) + ": [" + .resource.host + "](https://" + .resource.host + ")") | join("\n")')
+          
+          echo "## Deployment Complete for PR-${{ github.event.number }}! :tada:" >> pr_message.txt
+          echo "" >> pr_message.txt
+          
+          echo "### [View in Humanitec]($ENV_URL)" >> pr_message.txt
+          echo "Deployment ID: $DEPLOYMENT_ID" >> pr_message.txt
+
+          echo "" >> pr_message.txt
+          echo "### Domains:" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "$DOMAINS" >> pr_message.txt
+          echo "" >> pr_message.txt
+
+          echo "<details><summary>Score Output</summary>" >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "### Score Output:" >> pr_message.txt
+          echo '```json' >> pr_message.txt
+          echo "" >> pr_message.txt
+          cat score_output.json >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo '```' >> pr_message.txt
+          echo "" >> pr_message.txt
+          echo "</details>" >> pr_message.txt
+
+          cat pr_message.txt
+
+      - name: Comment PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: pr_message.txt
