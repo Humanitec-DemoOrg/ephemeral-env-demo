@@ -50,6 +50,26 @@ jobs:
         run: |
           sleep 1
 
+          IS_DONE=false
+
+          while [ "$IS_DONE" = false ]; do
+            CURRENT_STATUS=$(curl \
+              -H "Content-Type: application/json" \
+              -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
+              https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/pr-${{ github.event.number }} \
+              | jq -r ".last_deploy.status)
+            
+            INPROGRESS="in progress"
+
+            if [ "$CURRENT_STATUS" = "$INPROGRESS" ]; then
+              echo "Deployment still in progress..."
+              sleep 1
+            else
+              echo "Deployment complete!"
+              IS_DONE=true
+            fi
+          done
+
       - name: Build Comment Message
         run: |
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
