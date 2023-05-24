@@ -16,7 +16,10 @@ jobs:
 
       - name: Create Humanitec App
         run: |
-            curl -X POST -H "Content-Type: application/json" https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/$APP_NAME/envs \
+            curl -X POST \
+            -H "Content-Type: application/json" \
+            -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
+            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/$APP_NAME/envs \
             --data-binary @- << EOF
             {
               "from_deploy_id": "$FROM_DEPLOY_ID",
