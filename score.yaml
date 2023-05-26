@@ -15,7 +15,7 @@ containers:
   frontend:
     image: registry.humanitec.io/public/sample-score-app:latest
     variables:
-      MESSAGE: "This is a test message"
+      MESSAGE: "Hello everyone!"
       PORT: "3000"
       DB_DATABASE: ${resources.db.name}
       DB_USER: ${resources.db.username}
@@ -35,3 +35,5 @@ resources:
       password:
       host:
       port:
+  files:
+    type: s3
