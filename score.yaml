@@ -22,6 +22,8 @@ containers:
       DB_PASSWORD: ${resources.db.password}
       DB_HOST: ${resources.db.host}
       DB_PORT: ${resources.db.port}
+      FILES_BUCKET: ${resources.files.bucket}
+      FILES_REGION: ${resources.files.region}
 
 # Define the resources that this service needs
 resources:
@@ -35,4 +37,9 @@ resources:
       password:
       host:
       port:
+  files:
+    type: s3
+    properties:
+      bucket:
+      region:
 
