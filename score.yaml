@@ -15,13 +15,14 @@ containers:
   frontend:
     image: registry.humanitec.io/public/sample-score-app:latest
     variables:
-      MESSAGE: "Hello team!"
+      MESSAGE: "This is a demo!"
       PORT: "3000"
       DB_DATABASE: ${resources.db.name}
       DB_USER: ${resources.db.username}
       DB_PASSWORD: ${resources.db.password}
       DB_HOST: ${resources.db.host}
       DB_PORT: ${resources.db.port}
+      S3_BUCKET: ${resources.assets.bucket}
 
 # Define the resources that this service needs
 resources:
@@ -35,4 +36,8 @@ resources:
       password:
       host:
       port:
+  assets:
+    type: s3
+    properties:
+      bucket:
 
