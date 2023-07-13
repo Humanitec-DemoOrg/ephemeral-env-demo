@@ -7,7 +7,7 @@ permissions:
   contents: read
   pull-requests: write
 env:
-  BASE_ENVIRONMENT: 'developement'
+  ENVIRONMENT: 'development'
   SCORE_HUMANITEC_VERSION: 0.5.0
 jobs:
   build:
@@ -28,5 +28,5 @@ jobs:
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ vars.HUMANITEC_ORG }} \
               --app ${{ vars.APP_NAME }} \
-              --env ${{ env.BASE_ENVIRONMENT }} \
+              --env ${{ env.ENVIRONMENT }} \
               | tee score_output.json
