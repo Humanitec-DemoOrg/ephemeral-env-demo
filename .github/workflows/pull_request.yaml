@@ -1,25 +1,25 @@
 name: Pull Request
-
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-
 permissions:
   contents: read
   pull-requests: write
+env:
+  BASE_ENVIRONMENT: 'development'
+  SCORE_HUMANITEC_VERSION: 0.5.0
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - name: Create Humanitec App
         run: |
             # Get deployment ID of the main development environment
             curl \
             -H "Content-Type: application/json" \
             -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
-            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/development \
+            https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs/${{ env.BASE_ENVIRONMENT }} \
             | jq -r ".last_deploy.id" > deploy_id.txt
 
             # Create a new environment for the PR
@@ -32,20 +32,25 @@ jobs:
               "from_deploy_id": "$(cat deploy_id.txt)",
               "id": "pr-${{ github.event.number }}",
               "name": "PR-${{ github.event.number }}",
-              "type": "development"
+              "type": "${{ env.BASE_ENVIRONMENT }}"
             }
             EOF
-
       - name: Install score-humanitec
         run: |
-          wget https://github.com/score-spec/score-humanitec/releases/download/0.3.0/score-humanitec_0.3.0_linux_amd64.tar.gz
-          tar -xvf score-humanitec_0.3.0_linux_amd64.tar.gz
+          wget https://github.com/score-spec/score-humanitec/releases/download/${{ env.SCORE_HUMANITEC_VERSION }}/score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
+          tar -xvf score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
           chmod +x score-humanitec
           mv score-humanitec /usr/local/bin
-
       - name: Run Score
-        run: score-humanitec delta --retry --deploy --token ${{ secrets.HUMANITEC_TOKEN }} --org ${{ vars.HUMANITEC_ORG }} --app ${{ vars.APP_NAME }} --env pr-${{ github.event.number }} | tee score_output.json
-
+        run: |
+          score-humanitec delta \
+              --retry \
+              --deploy \
+              --token ${{ secrets.HUMANITEC_TOKEN }} \
+              --org ${{ vars.HUMANITEC_ORG }} \
+              --app ${{ vars.APP_NAME }} \
+              --env pr-${{ github.event.number }} \
+              | tee score_output.json
       - name: Wait for deployment
         run: |
           sleep 1
@@ -69,7 +74,6 @@ jobs:
               IS_DONE=true
             fi
           done
-
       - name: Build Comment Message
         run: |
           ENV_URL=$(jq -r ".metadata.url" score_output.json)
@@ -100,7 +104,6 @@ jobs:
           echo "</details>" >> pr_message.txt
 
           cat pr_message.txt
-
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v2
         with:
