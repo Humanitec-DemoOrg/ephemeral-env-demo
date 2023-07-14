@@ -38,7 +38,7 @@ resources:
       host:
       port:
   assets:
-    type: assets
+    type: s3
     properties:
       bucket:
       region:
