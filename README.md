@@ -1,5 +1,5 @@
 # Ephemeral Environments using Humanitec
-
+....
 This repository serves as a demonstration of how to use Humanitec to create temporary development environments. 
 With this approach, every time a developer starts working on a new feature or bug fix, they can easily spin up a new development environment that is a carbon copy of the production environment. This helps eliminate problems caused by differences between development and production setups, and allows for faster development cycles.
 
