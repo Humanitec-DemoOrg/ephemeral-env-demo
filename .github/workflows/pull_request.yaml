@@ -26,7 +26,7 @@ jobs:
             | jq -r ".last_deploy.id" > deploy_id.txt
 
             # Create a new environment for the PR
-            curl -X POST \
+            curl -o post.out -X POST \
             -H "Content-Type: application/json" \
             -H 'Authorization: Bearer ${{ secrets.HUMANITEC_TOKEN }}' \
             https://api.humanitec.io/orgs/${{ vars.HUMANITEC_ORG }}/apps/${{ vars.APP_NAME }}/envs \
@@ -38,6 +38,7 @@ jobs:
               "type": "${{ env.ENVIRONMENT_TYPE }}"
             }
             EOF
+            cat post.out | jq .from_deploy.status | grep -q succeeded || cat post.out; exit 1
       - name: Install score-humanitec
         run: |
           wget https://github.com/score-spec/score-humanitec/releases/download/${{ env.SCORE_HUMANITEC_VERSION }}/score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
