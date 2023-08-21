@@ -38,7 +38,11 @@ jobs:
               "type": "${{ env.ENVIRONMENT_TYPE }}"
             }
             EOF
-            cat post.out | jq .from_deploy.status | grep -q succeeded || cat post.out; exit 1
+            cat post.out | jq .from_deploy.status | grep -q succeeded
+            if [ $? -ne 0 ]; then
+              cat post.out
+              exit 1
+            fi
       - name: Install score-humanitec
         run: |
           wget https://github.com/score-spec/score-humanitec/releases/download/${{ env.SCORE_HUMANITEC_VERSION }}/score-humanitec_${{ env.SCORE_HUMANITEC_VERSION }}_linux_amd64.tar.gz
