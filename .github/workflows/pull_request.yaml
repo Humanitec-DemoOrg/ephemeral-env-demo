@@ -25,7 +25,7 @@ jobs:
             humctl create environment ${{ env.ENVIRONMENT_ID }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ vars.HUMANITEC_ORG }} \
-              --app ${{ env.APP_NAME }} \
+              --app ${{ vars.APP_NAME }} \
               --name ${{ env.ENVIRONMENT_NAME }} \
               -t ${{ env.ENVIRONMENT_TYPE }} \
               --from ${{ env.BASE_ENVIRONMENT }} \
@@ -54,7 +54,7 @@ jobs:
             CURRENT_STATUS=$(humctl get deployment . -o json \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ vars.HUMANITEC_ORG }} \
-              --app ${{ env.APP_NAME }} \
+              --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} \
               | jq -r .status.status)
             if [ "$CURRENT_STATUS" = "in progress" ]; then
@@ -79,14 +79,14 @@ jobs:
           DOMAINS=$(humctl get active-resources \
                       --token ${{ secrets.HUMANITEC_TOKEN }} \
                       --org ${{ vars.HUMANITEC_ORG }} \
-                      --app ${{ env.APP_NAME }} \
+                      --app ${{ vars.APP_NAME }} \
                       --env ${{ env.ENVIRONMENT_ID }} -o json \
                       | jq -r '. | map(. | select(.metadata.type == "dns")) | map((.metadata.res_id | split(".") | .[1]) + ": [" + .status.resource.host + "](https://" + .status.resource.host + ")") | join("\n")')
           
           DEPLOYMENT_ERRORS=$(humctl get deployment-error \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ vars.HUMANITEC_ORG }} \
-              --app ${{ env.APP_NAME }} \
+              --app ${{ vars.APP_NAME }} \
               --env ${{ env.ENVIRONMENT_ID }} -o json)
           if [ "$DEPLOYMENT_ERRORS" = "[]" ]; then
             echo "## Deployment successfully completed for ${{ env.ENVIRONMENT_NAME }}! :tada:" >> pr_message.txt
@@ -132,7 +132,7 @@ jobs:
           humctl diff sets env/${{ env.ENVIRONMENT_ID }} env/${{ env.BASE_ENVIRONMENT }} \
               --token ${{ secrets.HUMANITEC_TOKEN }} \
               --org ${{ vars.HUMANITEC_ORG }} \
-              --app ${{ env.APP_NAME }} -o json >> pr_message.txt
+              --app ${{ vars.APP_NAME }} -o json >> pr_message.txt
           echo "" >> pr_message.txt
           echo '```' >> pr_message.txt
           echo "" >> pr_message.txt
